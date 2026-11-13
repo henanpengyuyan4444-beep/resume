@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    /* 拉丁字母用模板自带的等宽字体，中文回落到系统字体 */
+    font-family:
+      "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+      "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC",
+      monospace;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* 固定顶栏会盖住标题，锚点跳转时留出空间 */
+  section {
+    scroll-margin-top: 5rem;
+  }
+}
+
+/* 滚动入场：默认可见，只有支持动效且 JS 正常时才会先隐藏 */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .reveal.in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media print {
+  /* 固定顶栏在打印时会重复出现在每页顶部，直接隐藏 */
+  #header,
+  footer nav {
+    display: none !important;
+  }
+
+  #hero {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 1.25rem 1.5rem !important;
+    background: #fff !important;
+  }
+
+  #hero > div.absolute {
+    display: none !important;
+  }
+
+  section {
+    break-inside: avoid;
+    padding: 1.25rem 1.5rem !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

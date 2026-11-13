@@ -1,0 +1,83 @@
+---
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import About from "../components/About.astro";
+import Projects from "../components/Projects.astro";
+import Experience from "../components/Experience.astro";
+import Education from "../components/Education.astro";
+import Footer from "../components/Footer.astro";
+import { siteConfig } from "../config";
+import "../styles/global.css";
+---
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={siteConfig.description} />
+    <meta name="theme-color" content="#ffffff" />
+    <meta property="og:title" content={`${siteConfig.name} · ${siteConfig.title}`} />
+    <meta property="og:description" content={siteConfig.description} />
+    <meta property="og:type" content="profile" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <title>{siteConfig.name} · {siteConfig.title}</title>
+  </head>
+  <body>
+    <Header />
+    <main>
+      <Hero />
+      <About />
+      <Projects />
+      <Experience />
+      <Education />
+    </main>
+    <Footer />
+    <script>
+      // 滚动入场：给每个 section 加 .reveal，进入视口后加 .in
+      const sections = document.querySelectorAll("main > section");
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("in");
+              io.unobserve(entry.target);
+            });
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+        );
+        sections.forEach((section) => {
+          section.classList.add("reveal");
+          io.observe(section);
+        });
+      }
+
+      // 导航高亮：当前区块对应的链接变色
+      const navLinks = [...document.querySelectorAll('#header a[href^="#"]')];
+      const targets = navLinks
+        .map((a) => document.querySelector(a.getAttribute("href")))
+        .filter(Boolean);
+      const spy = () => {
+        const pos = window.scrollY + window.innerHeight * 0.35;
+        let current = null;
+        targets.forEach((section) => {
+          if (section.offsetTop <= pos) current = section.id;
+        });
+        navLinks.forEach((a) => {
+          const active = a.getAttribute("href") === `#${current}`;
+          a.classList.toggle("text-gray-900", active);
+          a.classList.toggle("text-gray-500", !active);
+        });
+      };
+      window.addEventListener("scroll", spy, { passive: true });
+      spy();
+    </script>
+  </body>
+</html>
