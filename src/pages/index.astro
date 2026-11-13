@@ -5,43 +5,71 @@ import About from "../components/About.astro";
 import Projects from "../components/Projects.astro";
 import Experience from "../components/Experience.astro";
 import Education from "../components/Education.astro";
+import Contact from "../components/Contact.astro";
 import Footer from "../components/Footer.astro";
 import { siteConfig } from "../config";
 import "../styles/global.css";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const ogImage = `${base}/portrait.jpg`;
 ---
 
-<html lang="zh-CN">
+<html lang="zh-CN" class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/favicon.svg`} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <title>{siteConfig.name} · {siteConfig.title}</title>
     <meta name="description" content={siteConfig.description} />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#07080b" />
+    <meta property="og:type" content="profile" />
     <meta property="og:title" content={`${siteConfig.name} · ${siteConfig.title}`} />
     <meta property="og:description" content={siteConfig.description} />
-    <meta property="og:type" content="profile" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <meta property="og:image" content={ogImage} />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="image"
+      href={`${base}/portrait.jpg`}
+      imagesrcset={`${base}/portrait-sm.jpg 480w, ${base}/portrait.jpg 900w`}
+      imagesizes="(min-width: 1024px) 460px, 90vw"
     />
-    <title>{siteConfig.name} · {siteConfig.title}</title>
   </head>
-  <body>
+  <body class="relative">
+    <div class="grain"></div>
+    <a
+      href="#about"
+      class="no-print sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-black"
+      >跳到正文</a
+    >
+
     <Header />
+
     <main>
       <Hero />
       <About />
       <Projects />
       <Experience />
       <Education />
+      <Contact />
     </main>
+
     <Footer />
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
     <script>
-      // 滚动入场：给每个 section 加 .reveal，进入视口后加 .in
-      const sections = document.querySelectorAll("main > section");
+      // 顶栏滚动变实
+      const header = document.getElementById("header");
+      const onScroll = () => {
+        if (!header) return;
+        header.classList.toggle("is-solid", window.scrollY > 16);
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      // 入场
+      const revealEls = document.querySelectorAll(".reveal");
       if ("IntersectionObserver" in window) {
         const io = new IntersectionObserver(
           (entries) => {
@@ -51,33 +79,69 @@ import "../styles/global.css";
               io.unobserve(entry.target);
             });
           },
-          { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+          { threshold: 0.1, rootMargin: "0px 0px -6% 0px" },
         );
-        sections.forEach((section) => {
-          section.classList.add("reveal");
-          io.observe(section);
-        });
+        revealEls.forEach((el) => io.observe(el));
+      } else {
+        revealEls.forEach((el) => el.classList.add("in"));
       }
 
-      // 导航高亮：当前区块对应的链接变色
-      const navLinks = [...document.querySelectorAll('#header a[href^="#"]')];
-      const targets = navLinks
-        .map((a) => document.querySelector(a.getAttribute("href")))
-        .filter(Boolean);
+      // 导航高亮
+      const navLinks = [...document.querySelectorAll("[data-nav]")];
+      const sections = navLinks
+        .map((a) => document.querySelector(a.getAttribute("href") as string))
+        .filter(Boolean) as HTMLElement[];
       const spy = () => {
         const pos = window.scrollY + window.innerHeight * 0.35;
-        let current = null;
-        targets.forEach((section) => {
-          if (section.offsetTop <= pos) current = section.id;
+        let current: HTMLElement | null = null;
+        sections.forEach((s) => {
+          if (s.offsetTop <= pos) current = s;
         });
         navLinks.forEach((a) => {
-          const active = a.getAttribute("href") === `#${current}`;
-          a.classList.toggle("text-gray-900", active);
-          a.classList.toggle("text-gray-500", !active);
+          const active = current && a.getAttribute("href") === `#${current.id}`;
+          a.classList.toggle("text-text", !!active);
+          a.classList.toggle("text-muted", !active);
         });
       };
       window.addEventListener("scroll", spy, { passive: true });
       spy();
+
+      // 项目卡光标跟随
+      document.querySelectorAll("[data-spotlight]").forEach((card) => {
+        card.addEventListener("pointermove", (ev) => {
+          const e = ev as PointerEvent;
+          const r = (card as HTMLElement).getBoundingClientRect();
+          (card as HTMLElement).style.setProperty("--mx", `${e.clientX - r.left}px`);
+          (card as HTMLElement).style.setProperty("--my", `${e.clientY - r.top}px`);
+        });
+      });
+
+      // 复制邮箱
+      const toast = document.getElementById("toast");
+      let timer: number | undefined;
+      const showToast = (msg: string) => {
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add("show");
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => toast.classList.remove("show"), 1800);
+      };
+      document.querySelectorAll("[data-copy]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const text = btn.getAttribute("data-copy") || "";
+          try {
+            await navigator.clipboard.writeText(text);
+          } catch {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            ta.remove();
+          }
+          showToast(`已复制：${text}`);
+        });
+      });
     </script>
   </body>
 </html>

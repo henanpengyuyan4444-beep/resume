@@ -1,38 +1,60 @@
 ---
 import { siteConfig } from "../config";
+
+const highlights = [
+  { t: "企业 AI 应用", d: "工作台 / 内容生成 / 身份权限" },
+  { t: "多端交付", d: "管理台 · H5 · 移动端" },
+  { t: "LLM 工程化", d: "结构化输出 · 重试降级 · 知识库" },
+];
 ---
 
-<section id="about" class="p-8 sm:p-12 md:p-16 lg:p-24">
-  <div>
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
-      <div class="lg:col-span-4">
+<section id="about" class="relative py-20 lg:py-28">
+  <div class="mx-auto max-w-6xl px-6 lg:px-8">
+    <p class="eyebrow reveal">01 — 关于</p>
+
+    <div class="mt-10 grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
+      <div class="reveal">
         <h2
-          class="text-3xl sm:text-4xl md:text-5xl xl:text-7xl font-bold text-gray-900"
+          class="text-balance text-[clamp(1.85rem,3.4vw,2.7rem)] font-bold leading-[1.22] tracking-[-0.025em]"
         >
-          关于我
+          我关心的不是模型多强，
+          <span class="text-muted">而是它能不能稳定上线。</span>
         </h2>
-        <div
-          class="w-[75px] h-[5px] mt-2 rounded-full"
-          style={`background-color: ${siteConfig.accentColor}`}
-        >
+
+        <div class="mt-10 hidden gap-px overflow-hidden rounded-xl border border-line bg-line lg:grid">
+          {
+            highlights.map((item) => (
+              <div class="bg-ink px-4 py-3.5">
+                <p class="text-[13px] font-semibold">{item.t}</p>
+                <p class="mt-1 text-[11.5px] leading-relaxed text-dim">{item.d}</p>
+              </div>
+            ))
+          }
         </div>
       </div>
 
-      <div class="lg:col-span-8 space-y-8">
-        <p class="text-lg sm:text-xl md:text-2xl leading-relaxed text-gray-600">
-          {siteConfig.aboutMe}
-        </p>
+      <div class="reveal">
+        <p class="text-[15.5px] leading-[1.85] text-muted">{siteConfig.aboutMe}</p>
 
-        <div class="pt-4">
-          <div class="flex flex-wrap gap-3">
-            {
-              siteConfig.skills.map((skill) => (
-                <span class="px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-100 text-gray-800 rounded-full text-sm sm:text-base md:text-lg font-medium hover:bg-gray-200 transition-colors duration-200">
-                  {skill}
-                </span>
-              ))
-            }
-          </div>
+        <div class="mt-8 grid gap-px overflow-hidden rounded-xl border border-line bg-line lg:hidden">
+          {
+            highlights.map((item) => (
+              <div class="bg-ink px-4 py-3.5">
+                <p class="text-[13px] font-semibold">{item.t}</p>
+                <p class="mt-1 text-[11.5px] leading-relaxed text-dim">{item.d}</p>
+              </div>
+            ))
+          }
+        </div>
+
+        <div class="mt-8 flex flex-wrap gap-2">
+          {
+            siteConfig.skills.map((s) => (
+              <span class="rounded-lg border border-line bg-white/[0.03] px-2.5 py-1.5 font-mono text-[12px] text-muted">
+                {s}
+              </span>
+            ))
+          }
         </div>
       </div>
     </div>

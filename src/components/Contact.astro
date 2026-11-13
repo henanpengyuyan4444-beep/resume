@@ -1,0 +1,62 @@
+---
+import { siteConfig } from "../config";
+---
+
+<section id="contact" class="relative py-24 lg:py-32">
+  <div class="mx-auto max-w-6xl px-6 lg:px-8">
+    <div
+      class="card reveal relative overflow-hidden px-6 py-14 text-center sm:px-12 lg:py-20"
+    >
+      <div
+        class="glow left-1/2 top-0 h-[360px] w-[520px] -translate-x-1/2"
+        style="background: radial-gradient(circle, rgba(255,197,61,.22), transparent 65%)"
+      >
+      </div>
+
+      <p class="eyebrow justify-center">05 — 联系</p>
+
+      <h2
+        class="mx-auto mt-6 max-w-2xl text-[clamp(1.9rem,4vw,3.1rem)] font-bold leading-[1.15] tracking-[-0.03em]"
+      >
+        在找全栈 / AI 应用方向的岗位
+      </h2>
+      <p class="mx-auto mt-4 max-w-lg text-[14.5px] leading-relaxed text-muted">
+        北京，随时到岗。发我一段 JD 或直接约面试都可以，通常当天回复。
+      </p>
+
+      <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <button
+          class="btn btn-primary"
+          data-copy={siteConfig.social.email}
+          type="button"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+            ><rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg
+          >
+          复制邮箱
+        </button>
+
+        <a class="btn" href={`mailto:${siteConfig.social.email}`}>
+          {siteConfig.social.email}
+        </a>
+
+        <a class="btn" href={`tel:${siteConfig.phone}`}>
+          {siteConfig.phone}
+        </a>
+      </div>
+
+      {
+        siteConfig.social.github && (
+          <a
+            class="mt-6 inline-block text-[12.5px] text-dim transition-colors hover:text-text"
+            href={siteConfig.social.github}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub · {siteConfig.social.github.replace("https://github.com/", "@")}
+          </a>
+        )
+      }
+    </div>
+  </div>
+</section>
