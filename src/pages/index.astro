@@ -68,6 +68,27 @@ const ogImage = `${base}/portrait.jpg`;
       window.addEventListener("scroll", onScroll, { passive: true });
       onScroll();
 
+      // 首屏照片视差（尊重 prefers-reduced-motion）
+      const heroMedia = document.querySelector(".hero-media img") as HTMLImageElement | null;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (heroMedia && !reduceMotion) {
+        let raf = 0;
+        const parallax = () => {
+          raf = 0;
+          const y = window.scrollY;
+          heroMedia.style.transform = `translate3d(0, ${(y * 0.16).toFixed(1)}px, 0) scale(1.05)`;
+          heroMedia.style.opacity = String(Math.max(0, 1 - y / (window.innerHeight * 1.05)));
+        };
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (!raf) raf = requestAnimationFrame(parallax);
+          },
+          { passive: true },
+        );
+        parallax();
+      }
+
       // 入场
       const revealEls = document.querySelectorAll(".reveal");
       if ("IntersectionObserver" in window) {
